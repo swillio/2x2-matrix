@@ -30,7 +30,7 @@ There is no backend in this project and no data is sent by the app.
 
 ## Open the website
 
-Open `/home/runner/work/2x2-matrix/2x2-matrix/index.html` in your browser.
+Open `index.html` in your browser from this project folder.
 
 If you prefer serving files over HTTP:
 
