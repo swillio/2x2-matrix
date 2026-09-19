@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2x2 Matrix</title>
+<style>
+  :root{
+    --bg:#f6f6f3;
+    --paper:#ffffff;
+    --ink:#171717;
+    --muted:#74746f;
+    --line:#1f1f1f;
+    --hair:#d9d9d3;
+    --panel:#efefe9;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  button,input,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  .app{
+    min-height:100%;
+    display:grid;
+    grid-template-columns:minmax(280px,360px) 1fr;
+  }
+  .controls{
+    border-right:1px solid var(--hair);
+    background:var(--paper);
+    padding:24px;
+    overflow:auto;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .brand h1{
+    font-size:18px;
+    line-height:1;
+    margin:0;
+    letter-spacing:-0.02em;
+  }
+  .ghost{
+    border:1px solid var(--hair);
+    background:var(--paper);
+    border-radius:9px;
+    padding:8px 10px;
+  }
+  .ghost:hover{background:#f7f7f4}
+  .section{
+    border-top:1px solid var(--hair);
+    padding-top:18px;
+    margin-top:18px;
+  }
+  .section:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .section-title{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--muted);
+    margin:0 0 10px;
+    font-weight:700;
+  }
+  .field{margin-bottom:10px}
+  label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:5px;
+  }
+  input, textarea{
+    width:100%;
+    border:1px solid var(--hair);
+    background:#fff;
+    border-radius:9px;
+    padding:9px 10px;
+    outline:none;
+  }
+  input:focus, textarea:focus{border-color:#999}
+  textarea{resize:vertical;min-height:62px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .criterion{
+    font-size:12px;
+    min-height:54px;
+  }
+  details{
+    border-top:1px solid var(--hair);
+    margin-top:18px;
+    padding-top:16px;
+  }
+  summary{
+    cursor:pointer;
+    color:var(--muted);
+    font-size:13px;
+    user-select:none;
+  }
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  .primary{
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:#fff;
+    border-radius:9px;
+    padding:9px 12px;
+  }
+  .workspace{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:34px;
+  }
+  .sheet{
+    width:min(100%,1000px);
+    background:var(--paper);
+    border:1px solid var(--hair);
+    border-radius:20px;
+    padding:34px 38px 40px;
+    box-shadow:0 14px 40px rgba(0,0,0,.05);
+  }
+  .titleline{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .matrix-title{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-.03em;
+    margin:0;
+  }
+  .hint{font-size:12px;color:var(--muted)}
+  .matrix-wrap{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    grid-template-rows:auto 1fr;
+    column-gap:12px;
+    row-gap:10px;
+  }
+  .x-head{
+    grid-column:2;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:0 2px;
+  }
+  .x-head .axis-tag:first-child{text-align:left}
+  .x-head .axis-tag:last-child{text-align:right}
+  .axis-tag{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size:16px;
+    text-transform:uppercase;
+    letter-spacing:.015em;
+  }
+  .y-head{
+    grid-row:2;
+    display:grid;
+    grid-template-rows:1fr 1fr;
+    gap:12px;
+    align-items:center;
+    justify-items:center;
+  }
+  .y-head .axis-tag{
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    text-align:center;
+  }
+  .matrix{
+    grid-column:2;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    min-height:610px;
+    border:2px solid var(--line);
+    background:var(--line);
+    gap:2px;
+  }
+  .quad{
+    background:var(--paper);
+    position:relative;
+    min-width:0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+  .quad-title{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size:23px;
+    font-weight:700;
+    text-transform:uppercase;
+    text-align:center;
+    outline:none;
+    min-width:40px;
+  }
+  .quad-title:empty:before{
+    content:"QUADRANT";
+    color:#aaa;
+  }
+  .quad-notes{
+    margin-top:12px;
+    width:min(100%,330px);
+    min-height:20px;
+    text-align:center;
+    white-space:pre-wrap;
+    outline:none;
+    line-height:1.45;
+    font-size:14px;
+    color:#333;
+  }
+  .quad-notes:empty:before{
+    content:"";
+  }
+  .criteria-strip{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid var(--hair);
+    color:var(--muted);
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:8px 18px;
+    font-size:11px;
+    line-height:1.35;
+  }
+  .criteria-strip.show{display:grid}
+  .criteria-strip b{color:var(--ink);font-weight:600}
+  body.present .controls{display:none}
+  body.present .app{grid-template-columns:1fr}
+  body.present .workspace{padding:0;background:#fff}
+  body.present .sheet{
+    width:100%;
+    min-height:100vh;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    padding:36px 48px 46px;
+  }
+  body.present .hint{display:none}
+  body.present .matrix{min-height:calc(100vh - 150px)}
+  @media(max-width:820px){
+    .app{grid-template-columns:1fr}
+    .controls{border-right:0;border-bottom:1px solid var(--hair)}
+    .workspace{padding:18px}
+    .sheet{padding:24px 18px 28px}
+    .matrix{min-height:500px}
+    .quad{padding:18px 12px}
+    .quad-title{font-size:18px}
+    .axis-tag{font-size:13px}
+  }
+  @media print{
+    body{background:#fff}
+    .controls{display:none!important}
+    .app{display:block}
+    .workspace{padding:0}
+    .sheet{border:0;box-shadow:none;width:100%;padding:0}
+    .matrix{min-height:7.3in}
+    .hint{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="controls">
+    <div class="brand">
+      <h1>2x2 Matrix</h1>
+      <button class="ghost" id="presentBtn">Present</button>
+    </div>
+
+    <div class="section">
+      <div class="field">
+        <label>Title</label>
+        <input id="title" value="Eisenhower Matrix" />
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Horizontal axis</p>
+      <div class="row">
+        <div class="field">
+          <label>Left</label>
+          <input id="xLeft" value="Urgent" />
+        </div>
+        <div class="field">
+          <label>Right</label>
+          <input id="xRight" value="Not urgent" />
+        </div>
+      </div>
+      <details>
+        <summary>Acceptance criteria</summary>
+        <div class="field" style="margin-top:10px">
+          <label>Left side means...</label>
+          <textarea class="criterion" id="xLeftCrit" placeholder="Optional"></textarea>
+        </div>
+        <div class="field">
+          <label>Right side means...</label>
+          <textarea class="criterion" id="xRightCrit" placeholder="Optional"></textarea>
+        </div>
+      </details>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Vertical axis</p>
+      <div class="row">
+        <div class="field">
+          <label>Top</label>
+          <input id="yTop" value="Important" />
+        </div>
+        <div class="field">
+          <label>Bottom</label>
+          <input id="yBottom" value="Not important" />
+        </div>
+      </div>
+      <details>
+        <summary>Acceptance criteria</summary>
+        <div class="field" style="margin-top:10px">
+          <label>Top means...</label>
+          <textarea class="criterion" id="yTopCrit" placeholder="Optional"></textarea>
+        </div>
+        <div class="field">
+          <label>Bottom means...</label>
+          <textarea class="criterion" id="yBottomCrit" placeholder="Optional"></textarea>
+        </div>
+      </details>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Quadrant names</p>
+      <div class="row">
+        <div class="field"><label>Top left</label><input id="q1" value="Do" /></div>
+        <div class="field"><label>Top right</label><input id="q2" value="Decide" /></div>
+        <div class="field"><label>Bottom left</label><input id="q3" value="Delegate" /></div>
+        <div class="field"><label>Bottom right</label><input id="q4" value="Delete" /></div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Display acceptance criteria on page</summary>
+      <div class="field" style="margin-top:12px">
+        <label><input type="checkbox" id="showCriteria" style="width:auto;margin-right:7px"> Show criteria beneath matrix</label>
+      </div>
+    </details>
+
+    <div class="actions">
+      <button class="primary" id="printBtn">Print / Save PDF</button>
+      <button class="ghost" id="resetBtn">Reset</button>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <section class="sheet">
+      <div class="titleline">
+        <h2 class="matrix-title" id="titleOut">Eisenhower Matrix</h2>
+        <div class="hint">Click quadrant text to edit</div>
+      </div>
+
+      <div class="matrix-wrap">
+        <div class="x-head">
+          <div class="axis-tag" id="xLeftOut">Urgent</div>
+          <div class="axis-tag" id="xRightOut">Not urgent</div>
+        </div>
+
+        <div class="y-head">
+          <div class="axis-tag" id="yTopOut">Important</div>
+          <div class="axis-tag" id="yBottomOut">Not important</div>
+        </div>
+
+        <div class="matrix">
+          <div class="quad">
+            <div class="quad-title" contenteditable="true" spellcheck="false" data-q="q1">DO</div>
+            <div class="quad-notes" contenteditable="true" spellcheck="true"></div>
+          </div>
+          <div class="quad">
+            <div class="quad-title" contenteditable="true" spellcheck="false" data-q="q2">DECIDE</div>
+            <div class="quad-notes" contenteditable="true" spellcheck="true"></div>
+          </div>
+          <div class="quad">
+            <div class="quad-title" contenteditable="true" spellcheck="false" data-q="q3">DELEGATE</div>
+            <div class="quad-notes" contenteditable="true" spellcheck="true"></div>
+          </div>
+          <div class="quad">
+            <div class="quad-title" contenteditable="true" spellcheck="false" data-q="q4">DELETE</div>
+            <div class="quad-notes" contenteditable="true" spellcheck="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="criteria-strip" id="criteriaStrip">
+        <div><b id="critXLeftLabel">Urgent:</b> <span id="critXLeft"></span></div>
+        <div><b id="critXRightLabel">Not urgent:</b> <span id="critXRight"></span></div>
+        <div><b id="critYTopLabel">Important:</b> <span id="critYTop"></span></div>
+        <div><b id="critYBottomLabel">Not important:</b> <span id="critYBottom"></span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const ids = ["title","xLeft","xRight","yTop","yBottom","xLeftCrit","xRightCrit","yTopCrit","yBottomCrit","q1","q2","q3","q4","showCriteria"];
+const $ = id => document.getElementById(id);
+
+function save(){
+  const state = {};
+  ids.forEach(id => state[id] = $(id).type === "checkbox" ? $(id).checked : $(id).value);
+  state.notes = [...document.querySelectorAll(".quad-notes")].map(x => x.innerText);
+  localStorage.setItem("matrix2x2", JSON.stringify(state));
+}
+function load(){
+  try{
+    const state = JSON.parse(localStorage.getItem("matrix2x2") || "{}");
+    ids.forEach(id => {
+      if(state[id] !== undefined){
+        if($(id).type === "checkbox") $(id).checked = state[id];
+        else $(id).value = state[id];
+      }
+    });
+    if(Array.isArray(state.notes)){
+      document.querySelectorAll(".quad-notes").forEach((n,i)=> n.innerText = state.notes[i] || "");
+    }
+  }catch(e){}
+}
+function sync(){
+  $("titleOut").textContent = $("title").value || "2x2 Matrix";
+  $("xLeftOut").textContent = $("xLeft").value;
+  $("xRightOut").textContent = $("xRight").value;
+  $("yTopOut").textContent = $("yTop").value;
+  $("yBottomOut").textContent = $("yBottom").value;
+
+  ["q1","q2","q3","q4"].forEach(q=>{
+    const el = document.querySelector(`[data-q="${q}"]`);
+    if(document.activeElement !== el) el.innerText = $(q).value;
+  });
+
+  $("critXLeftLabel").textContent = ($("xLeft").value || "Left") + ":";
+  $("critXRightLabel").textContent = ($("xRight").value || "Right") + ":";
+  $("critYTopLabel").textContent = ($("yTop").value || "Top") + ":";
+  $("critYBottomLabel").textContent = ($("yBottom").value || "Bottom") + ":";
+  $("critXLeft").textContent = $("xLeftCrit").value || "—";
+  $("critXRight").textContent = $("xRightCrit").value || "—";
+  $("critYTop").textContent = $("yTopCrit").value || "—";
+  $("critYBottom").textContent = $("yBottomCrit").value || "—";
+  $("criteriaStrip").classList.toggle("show", $("showCriteria").checked);
+  save();
+}
+
+load();
+sync();
+
+ids.forEach(id => $(id).addEventListener("input", sync));
+
+document.querySelectorAll(".quad-title").forEach(el=>{
+  el.addEventListener("input", ()=>{
+    $(el.dataset.q).value = el.innerText.replace(/\n/g," ").trim();
+    save();
+  });
+  el.addEventListener("keydown", e=>{
+    if(e.key === "Enter"){e.preventDefault(); el.blur();}
+  });
+});
+document.querySelectorAll(".quad-notes").forEach(el=>{
+  el.addEventListener("input", save);
+});
+
+$("printBtn").addEventListener("click", ()=>window.print());
+$("presentBtn").addEventListener("click", ()=>{
+  document.body.classList.toggle("present");
+  $("presentBtn").textContent = document.body.classList.contains("present") ? "Edit" : "Present";
+});
+$("resetBtn").addEventListener("click", ()=>{
+  if(!confirm("Reset this matrix?")) return;
+  localStorage.removeItem("matrix2x2");
+  location.reload();
+});
+</script>
+</body>
+</html>
