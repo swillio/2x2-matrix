@@ -1,52 +1,41 @@
-# 2x2 Matrix
+# 2x2 Matrix (Eisenhower Matrix Builder)
 
-A minimal, single-page 2x2 matrix builder. No framework, build step, server, or dependencies.
+A simple website for turning a messy to-do list into a clear priority matrix.
 
-## Run locally
+Use it to sort work into four quadrants, focus on what matters most, and quickly export a clean matrix for sharing or planning.
 
-Open `index.html` directly in a browser.
+## Why use it
 
-For a local web server:
+- Prioritize tasks by urgency vs. importance
+- Rename axes and quadrants for any framework (not just Eisenhower)
+- Add notes directly inside each quadrant
+- Print or save as PDF for meetings and planning docs
+- Keep your matrix private in your own browser
+
+## What you can do on the page
+
+1. Set a matrix title.
+2. Name both axes (left/right and top/bottom).
+3. Optionally define acceptance criteria for each axis side.
+4. Rename the four quadrant labels.
+5. Add notes inside each quadrant.
+6. Toggle presentation mode for a cleaner full-screen view.
+7. Print or save to PDF.
+
+## Privacy
+
+Your matrix is saved in your browser using `localStorage` so your work stays available when you reopen the page on the same device/browser.
+
+There is no backend in this project and no data is sent by the app.
+
+## Open the website
+
+Open `index.html` in your browser from this project folder.
+
+If you prefer serving files over HTTP:
 
 ```bash
 python3 -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
-
-## Push to GitHub
-
-Create an empty GitHub repository, then from this folder run:
-
-```bash
-git init
-git add .
-git commit -m "Initial 2x2 matrix"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-git push -u origin main
-```
-
-## Host with GitHub Pages
-
-In the GitHub repository:
-
-1. Open **Settings -> Pages**.
-2. Under **Build and deployment**, choose **Deploy from a branch**.
-3. Select branch **main** and folder **/(root)**.
-4. Save.
-
-The site URL will typically be:
-
-`https://YOUR_USERNAME.github.io/YOUR_REPO/`
-
-The empty `.nojekyll` file tells GitHub Pages to serve this as a plain static site without Jekyll processing.
-
-## Files
-
-- `index.html`: the entire app
-- `.nojekyll`: disables Jekyll processing
-
-## Privacy
-
-The app stores matrix content in the browser's `localStorage`. There is no backend and the page itself does not transmit that content anywhere.
